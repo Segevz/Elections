@@ -82,9 +82,20 @@ App = {
         array[i]
       }
 
+      var sorted = [];
 
-      for (var i = 1; i <= candidatesCount; i++) {
+      for (var i = 0; i < candidatesCount; i++) {
         electionInstance.candidates(i).then(function(candidate) {
+          sorted[i] = candidate
+        });
+      }
+      var byVoteCount = sorted.slice(0);
+      byVoteCount.sort(function(a,b) {
+        return a[2] - b[2];
+      });
+
+      for (var i = 0; i < sorted.length; i++) {
+        var candidate = sorted[i];
           var id = candidate[0];
           var name = candidate[1];
           var voteCount = candidate[2];
@@ -96,7 +107,6 @@ App = {
           // Render candidate ballot option
           var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
           candidatesSelect.append(candidateOption);
-        });
       }
       return electionInstance.voters(App.account);
     }).then(function(hasVoted) {
