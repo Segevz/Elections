@@ -15,15 +15,23 @@ contract Election {
     mapping(uint => Candidate) public candidates;
     // Store Candidates Count
     uint public candidatesCount;
+    uint public timeLock;
+
 
     // voted event
     event votedEvent (
         uint indexed _candidateId
     );
 
-    constructor () public {
+    constructor (uint _electionTime) public {
+        timeLock = _electionTime;
         addCandidate("Candidate 1");
         addCandidate("Candidate 2");
+    }
+
+    modifier lockVotes() {
+      require(now > timeLock);
+      _;
     }
 
     function addCandidate (string memory _name) private {
@@ -31,7 +39,7 @@ contract Election {
         candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
     }
 
-    function vote (uint _candidateId) public {
+    function vote (uint _candidateId) lockVotes public {
         // require that they haven't voted before
         require(!voters[msg.sender]);
 
