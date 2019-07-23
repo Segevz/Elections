@@ -78,42 +78,28 @@ App = {
 
       var candidatesSelect = $('#candidatesSelect');
       candidatesSelect.empty();
-      for (var i = 0; i < candidatesCount; i++) {
-        array[i]
-      }
 
-      var sorted = [];
+            for (var i = 1; i <= candidatesCount; i++) {
+              electionInstance.candidates(i).then(function(candidate) {
+                var id = candidate[0];
+                var name = candidate[1];
+                var voteCount = candidate[2];
 
-      for (var i = 0; i < candidatesCount; i++) {
-        electionInstance.candidates(i).then(function(candidate) {
-          sorted[i] = candidate
-        });
-      }
-      var byVoteCount = sorted.slice(0);
-      byVoteCount.sort(function(a,b) {
-        return a[2] - b[2];
-      });
+                // Render candidate Result
+                var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
+                candidatesResults.append(candidateTemplate);
 
-      for (var i = 0; i < sorted.length; i++) {
-        var candidate = sorted[i];
-          var id = candidate[0];
-          var name = candidate[1];
-          var voteCount = candidate[2];
-
-          // Render candidate Result
-          var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
-          candidatesResults.append(candidateTemplate);
-
-          // Render candidate ballot option
-          var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
-          candidatesSelect.append(candidateOption);
-      }
-      return electionInstance.voters(App.account);
-    }).then(function(hasVoted) {
-      // Do not allow a user to vote
-      if(hasVoted) {
-        $('form').hide();
-      }
+                // Render candidate ballot option
+                var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
+                candidatesSelect.append(candidateOption);
+              });
+            }
+            return electionInstance.voters(App.account);
+          }).then(function(hasVoted) {
+            // Do not allow a user to vote
+            if(hasVoted) {
+              $('form').hide();
+            }
       loader.hide();
       content.show();
     }).catch(function(error) {
