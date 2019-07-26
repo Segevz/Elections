@@ -116,9 +116,10 @@ contract voteCoin is ERC20Interface, Owned, SafeMath {
         symbol = "voteCoin";
         name = "Vote Coin";
         decimals = 18;
-        _totalSupply = 100000000000000000000000000;
-        balances[msg.sender] = _totalSupply;
-        emit Transfer(address(0), msg.sender, _totalSupply);
+        _totalSupply = 10000000000000;
+        balances[owner] = _totalSupply;
+        emit Transfer(address(0), owner, _totalSupply);
+        owner = msg.sender;
     }
 
 
@@ -144,9 +145,9 @@ contract voteCoin is ERC20Interface, Owned, SafeMath {
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
     function transfer(address to, uint tokens) public returns (bool success) {
-        balances[msg.sender] = safeSub(balances[msg.sender], tokens);
+        balances[owner] = safeSub(balances[owner], tokens);
         balances[to] = safeAdd(balances[to], tokens);
-        emit Transfer(msg.sender, to, tokens);
+        emit Transfer(owner, to, tokens);
         return true;
     }
 
@@ -280,7 +281,7 @@ contract Election is voteCoin{
         // update candidate vote Count
         candidates[_candidateId].voteCount ++;
 
-        //send 1 Token for voting
+        //send 1 Token for
         transfer(msg.sender, 1);
 
         // trigger voted event

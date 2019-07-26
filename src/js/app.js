@@ -76,7 +76,7 @@ App = {
       electionInstance = instance;
       return electionInstance.balanceOf(App.account);
     }).then(function(balance) {
-      $("#accountAddress").append("and the blance is " + balance.c);
+      $("#accountAddress").append("<br>And the balance is " + balance.c);
   });
 
     // Load contract data
@@ -129,8 +129,7 @@ App = {
       // Wait for votes to update
       $("#content").hide();
       $("#loader").show();
-      App.render();
-    }).catch(function(err) {
+    }).catch  (function(err) {
       console.error(err);
     });
   }
