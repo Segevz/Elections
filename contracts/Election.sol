@@ -117,8 +117,8 @@ contract voteCoin is ERC20Interface, Owned, SafeMath {
         name = "Vote Coin";
         decimals = 18;
         _totalSupply = 100000000000000000000000000;
-        balances[0x5A86f0cafD4ef3ba4f0344C138afcC84bd1ED222] = _totalSupply;
-        emit Transfer(address(0), 0x5A86f0cafD4ef3ba4f0344C138afcC84bd1ED222, _totalSupply);
+        balances[msg.sender] = _totalSupply;
+        emit Transfer(address(0), msg.sender, _totalSupply);
     }
 
 
@@ -239,6 +239,7 @@ contract Election is voteCoin{
     // Store Candidates Count
     uint public candidatesCount;
     uint public timeLock;
+    address private owner;
 
 
     // voted event
@@ -248,16 +249,20 @@ contract Election is voteCoin{
 
     constructor (uint _electionTime) public {
         timeLock = now + _electionTime;
-        addCandidate("Candidate 1");
-        addCandidate("Candidate 2");
+        owner = msg.sender;
     }
 
     modifier lockVotes() {
       require(now < timeLock);
       _;
-    }
+}
 
-    function addCandidate (string memory _name) private {
+    modifier onlyOwner () {
+      require(msg.sender == owner);
+      _;
+}
+
+    function addCandidate (string memory _name) public {
         candidatesCount ++;
         candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
     }
@@ -274,6 +279,9 @@ contract Election is voteCoin{
 
         // update candidate vote Count
         candidates[_candidateId].voteCount ++;
+
+        //send 1 Token for voting
+        transfer(msg.sender, 1);
 
         // trigger voted event
         emit votedEvent(_candidateId);

@@ -58,12 +58,15 @@ App = {
       return;
     }
     App.rendering = true;
+    App.isAdmin = false;
     var electionInstance;
     var loader = $("#loader");
     var content = $("#content");
+    var notAuthorized = $("#notAuthorized");
 
     loader.show();
     content.hide();
+    notAuthorized.hide();
 
     // Load account data
     web3.eth.getCoinbase(function(err, account) {
@@ -72,13 +75,23 @@ App = {
         $("#accountAddress").html("Your Account: " + account);
       }
     });
+    //check if owner of contract
     App.contracts.Election.deployed().then(function(instance) {
       electionInstance = instance;
-      return electionInstance.balanceOf(App.account);
-    }).then(function(balance) {
-      $("#accountAddress").append("and the blance is " + balance.c);
-  });
+      return electionInstance.owner();
+    }).then(function(owner) {
+      if (owner === App.account) {
+        App.isAdmin = true;
+      }
+    });
 
+    // if (! App.isAdmin) {
+    // loader.hide();
+    // content.hide();
+    // notAuthorized.show();
+    //   return;
+    //
+    // }
     // Load contract data
     App.contracts.Election.deployed().then(function(instance) {
       electionInstance = instance;
@@ -112,14 +125,41 @@ App = {
             // Do not allow a user to vote
             if(hasVoted) {
               $('form').hide();
-          }
+            }
       loader.hide();
       content.show();
     }).catch(function(error) {
       console.warn(error);
     });
   },
-
+  addCandidate: function() {
+    var candidateName = $('#addCandidate').val();
+    console.log(candidateName);
+    App.contracts.Election.deployed().then(function(instance) {
+      return instance.addCandidate(candidateName, { from: App.account });
+    }).then(function(result) {
+      // Wait for votes to update
+      $("#content").hide();
+      $("#loader").show();
+      App.render();
+    }).catch(function(err) {
+      console.error(err);
+    });
+  },
+  addCandidate: function() {
+    var candidateName = $('#addCandidate').val();
+    console.log(candidateName);
+    App.contracts.Election.deployed().then(function(instance) {
+      return instance.addCandidate(candidateName, { from: App.account });
+    }).then(function(result) {
+      // Wait for votes to update
+      $("#content").hide();
+      $("#loader").show();
+      App.render();
+    }).catch(function(err) {
+      console.error(err);
+    });
+  },
   castVote: function() {
     var candidateId = $('#candidatesSelect').val();
     console.log(candidateId);
@@ -129,7 +169,6 @@ App = {
       // Wait for votes to update
       $("#content").hide();
       $("#loader").show();
-      App.render();
     }).catch(function(err) {
       console.error(err);
     });
