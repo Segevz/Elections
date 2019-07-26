@@ -3,6 +3,7 @@ App = {
   contracts: {},
   account: '0x0',
   hasVoted: false,
+  rendering: false,
 
   init: function() {
     return App.initWeb3();
@@ -53,6 +54,10 @@ App = {
   },
 
   render: function() {
+    if (App.rendering){
+      return;
+    }
+    App.rendering = true;
     var electionInstance;
     var loader = $("#loader");
     var content = $("#content");
@@ -96,6 +101,8 @@ App = {
             }
             return electionInstance.voters(App.account);
           }).then(function(hasVoted) {
+            App.rendering = false
+            sortTable();
             // Do not allow a user to vote
             if(hasVoted) {
               $('form').hide();
@@ -109,6 +116,7 @@ App = {
 
   castVote: function() {
     var candidateId = $('#candidatesSelect').val();
+    console.log(candidateId);
     App.contracts.Election.deployed().then(function(instance) {
       return instance.vote(candidateId, { from: App.account });
     }).then(function(result) {
@@ -126,3 +134,28 @@ $(function() {
     App.init();
   });
 });
+
+ function sortTable(){
+   console.log("sorting...");
+  var rows = $('#mytable tbody  tr').get();
+
+  rows.sort(function(a, b) {
+
+  var A = $(a).children('td').eq(1).text().toUpperCase();
+  var B = $(b).children('td').eq(1).text().toUpperCase();
+
+  if(A < B) {
+    return -1;
+  }
+
+  if(A > B) {
+    return 1;
+  }
+
+  return 0;
+
+  });
+  $.each(rows, function(index, row) {
+    $('#mytable').children('tbody').append(row);
+  });
+}
