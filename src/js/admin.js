@@ -123,9 +123,6 @@ App = {
             App.rendering = false
             sortTable();
             // Do not allow a user to vote
-            if(hasVoted) {
-              $('form').hide();
-            }
       loader.hide();
       content.show();
     }).catch(function(error) {
@@ -160,15 +157,15 @@ App = {
       console.error(err);
     });
   },
-  castVote: function() {
-    var candidateId = $('#candidatesSelect').val();
-    console.log(candidateId);
+  addVoter: function() {
+    var voterAddress = $('#addVoter').val();
+    console.log(voterAddress);
     App.contracts.Election.deployed().then(function(instance) {
-      return instance.vote(candidateId, { from: App.account });
+      return instance.addVoter(voterAddress, { from: App.account });
     }).then(function(result) {
-      // Wait for votes to update
       $("#content").hide();
       $("#loader").show();
+      App.Render();
     }).catch(function(err) {
       console.error(err);
     });

@@ -52,6 +52,15 @@
               <button type="submit" class="btn btn-primary">Add Candidate</button>
               <hr />
             </form>
+            <form onSubmit="App.addVoter(); return false;">
+              <div class="form-group">
+                <label for="addVoter">Voter address</label>
+                <input type="text" class="form-control" id="addVoter">
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Add Voter</button>
+              <hr />
+            </form>
             <p id="accountAddress" class="text-center"></p>
           </div>
         </div>

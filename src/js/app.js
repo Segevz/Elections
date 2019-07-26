@@ -106,11 +106,11 @@ App = {
               });
             }
             return electionInstance.voters(App.account);
-          }).then(function(hasVoted) {
+          }).then(function(canVoted) {
             App.rendering = false
             sortTable();
             // Do not allow a user to vote
-            if(hasVoted) {
+            if(!canVoted) {
               $('form').hide();
           }
       loader.hide();
