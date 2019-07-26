@@ -151,11 +151,11 @@ $(function() {
   var B = $(b).children('td').eq(1).text().toUpperCase();
 
   if(A < B) {
-    return -1;
+    return 1;
   }
 
   if(A > B) {
-    return 1;
+    return -1;
   }
 
   return 0;

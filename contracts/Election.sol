@@ -241,8 +241,6 @@ contract Election is voteCoin{
     uint public candidatesCount;
     // store the time lock
     uint public timeLock;
-    //store the owner address
-    address private owner;
 
 
     // voted event
@@ -257,11 +255,6 @@ contract Election is voteCoin{
 
     modifier lockVotes() {
       require(now < timeLock);
-      _;
-}
-
-    modifier onlyOwner () {
-      require(msg.sender == owner);
       _;
 }
 

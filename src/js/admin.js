@@ -122,25 +122,10 @@ App = {
           }).then(function(hasVoted) {
             App.rendering = false
             sortTable();
-            // Do not allow a user to vote
       loader.hide();
       content.show();
     }).catch(function(error) {
       console.warn(error);
-    });
-  },
-  addCandidate: function() {
-    var candidateName = $('#addCandidate').val();
-    console.log(candidateName);
-    App.contracts.Election.deployed().then(function(instance) {
-      return instance.addCandidate(candidateName, { from: App.account });
-    }).then(function(result) {
-      // Wait for votes to update
-      $("#content").hide();
-      $("#loader").show();
-      App.render();
-    }).catch(function(err) {
-      console.error(err);
     });
   },
   addCandidate: function() {
@@ -169,6 +154,31 @@ App = {
     }).catch(function(err) {
       console.error(err);
     });
+  },
+  addVoterFromFile: function() {
+    var voterAddress = $('#addVoterFromFile').val();
+    console.log(voterAddress);
+    App.contracts.Election.deployed().then(function(instance) {
+      return instance.addVoter(voterAddress, { from: App.account });
+    }).then(function(result) {
+      $("#content").hide();
+      $("#loader").show();
+      App.Render();
+    }).catch(function(err) {
+      console.error(err);
+    });
+  },
+  openFile: function(event) {
+  var input = event.target;
+
+  var reader = new FileReader();
+  reader.onload = function(){
+    var dataURL = reader.result;
+    var output = document.getElementById('output');
+    output.src = dataURL;
+    console.log(dataURL);
+  };
+  reader.readAsDataURL(input.files[0]);
   }
 };
 
@@ -188,11 +198,11 @@ $(function() {
   var B = $(b).children('td').eq(1).text().toUpperCase();
 
   if(A < B) {
-    return -1;
+    return 1;
   }
 
   if(A > B) {
-    return 1;
+    return -1;
   }
 
   return 0;
